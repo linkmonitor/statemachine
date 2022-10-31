@@ -11,7 +11,7 @@
 /// state machine instance and read information from it; this makes it possible
 /// to use the same states in several state machine instances at once.
 ///
-/// Conceptually, state bodies comprise three parts:
+/// Conceptually, state bodies comprise:
 ///
 ///   1. Entry logic;
 ///   2. Body logic; and
