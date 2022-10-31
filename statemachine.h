@@ -128,7 +128,7 @@ extern "C"
     if (1)                                                              \
     {                                                                   \
         /* Reaching this means the body logic did not yield. If the */  \
-        /* body logic did not specify a transition that is an error. */ \
+        /* body logic did not specify a transition that is an error.*/  \
         assert(a_sm->m_next_state);                                     \
         goto sm_exit_body;                                              \
     }                                                                   \
