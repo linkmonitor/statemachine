@@ -44,7 +44,7 @@ extern "C"
     /// function pointer outside of its `SmState_t` struct wrapper.
     typedef struct SmState_t (*SmRawState_t)(struct StateMachine_t *a_sm);
 
-    /// All the information needed to drive a state machine instances lives in a
+    /// All the information needed to drive state machine instances lives in a
     /// variable of type `StateMachine_t`.
     typedef struct StateMachine_t
     {
