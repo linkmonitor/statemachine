@@ -50,9 +50,9 @@ extern "C"
     {
         // NOTE: Clients should never interact with these fields directly.
 
-        SmRawState_t m_prev_state;  ///< To detect transitions.
+        SmRawState_t m_prev_state;  ///< State transition detection.
         SmRawState_t m_next_state;  ///< Inter-macro communication.
-        SmState_t m_curr_state;     ///< Tracks progress.
+        SmState_t m_curr_state;     ///< Progress tracking.
         void *m_context;  ///< Facilitates communication between the inside and
                           /// outside of the state machine.
     } StateMachine_t;
