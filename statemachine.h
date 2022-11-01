@@ -81,14 +81,14 @@ extern "C"
     ///
     ///    SmState_t SomeState(StateMachine_t *a_sm) {
     ///      SM_ENTRY(a_sm) {
-    ///        // Entry logic goes here. Can leave the block with 'break'.
+    ///        // Entry logic goes here.
     ///      }
     ///
     ///      /// Body logic goes here. All branches must result in a call to
     ///      /// either SM_YIELD() or SM_TRANSITION(a_sm, <some_state>).
     ///
     ///      SM_EXIT(a_sm) {
-    ///        // Exit logic goes here. Can leave the block with 'break'.
+    ///        // Exit logic goes here.
     ///      }
     ///    }
     ///
@@ -105,9 +105,6 @@ extern "C"
         }                                                           \
     }                                                               \
     else                                                            \
-        /* Eat 'break' in user code to keep symmetry with EXIT().*/ \
-        /* Use '$' in the identifier to avoid collisions.*/         \
-        for (int $i = 0; $i < 1; ++$i)                              \
         sm_entry_code:
 
 #define SM_YIELD()      \
@@ -141,9 +138,6 @@ extern "C"
                 };                                                      \
             }                                                           \
             else                                                        \
-                /* Eat 'break' in user code to avoid return bypass.*/   \
-                /* Use '$' in the identifier to avoid collisions.*/     \
-                for (int $i = 0; $i < 1; ++$i)                          \
                 sm_exit_body:
 #ifdef __cplusplus
 }
