@@ -32,19 +32,12 @@ static SmState_t RedLight(StateMachine_t *a_sm)
 
     time_t now;
     time(&now);
-    if (difftime(now, context->m_entry_time) > 3.f /*seconds*/)
-    {
-        SM_TRANSITION(a_sm, YellowLight);
-    }
-    else
-    {
-        SM_YIELD();
-    }
+    bool timeout = difftime(now, context->m_entry_time) > 3.f /*seconds*/;
 
-    SM_EXIT(a_sm)
-    {
-        printf("RedLight:EXIT\n");
-    };
+    SM_TRANSITION_IF(a_sm, timeout, YellowLight);
+    SM_YIELD();
+
+    SM_EXIT(a_sm) printf("RedLight:EXIT\n");
 }
 
 int main(void)
