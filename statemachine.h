@@ -23,6 +23,8 @@
 
 #include <stdbool.h>
 
+#include "statemachine/internal/checked_config.h"
+
 #ifdef __cplusplus
 extern "C"
 {
