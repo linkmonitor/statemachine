@@ -21,7 +21,6 @@
 /// logic runs and look at the documentation comment preceding the macro
 /// definitions to see what a sample state looks like.
 
-#include <assert.h>
 #include <stdbool.h>
 
 #ifdef __cplusplus
@@ -72,6 +71,10 @@ extern "C"
     ///     b) Transitions run A's exit logic and makes another state current.
     bool StateMachineRun(StateMachine_t *a_sm);
 
+    /// Clients should not refer to this function directly. It is used as a
+    /// sentinel value within state machine logic.
+    SmState_t SmYieldSentinel(StateMachine_t *a_sm);
+
     /// The following macros use patterns which are best explained by:
     ///
     ///   https://www.chiark.greenend.org.uk/~sgtatham/mp/
@@ -84,7 +87,7 @@ extern "C"
     ///        // Entry logic goes here. Can leave the block with 'break'.
     ///      }
     ///
-    ///      /// Body logic goes here. All branches must result in a call to
+    ///      /// Body logic goes here. All branches MUST result in a call to
     ///      /// either SM_YIELD() or SM_TRANSITION(a_sm, <some_state>).
     ///
     ///      SM_EXIT(a_sm) {
@@ -110,10 +113,10 @@ extern "C"
         /* Use '$' in the identifier to avoid collisions.*/         \
         for (int $i = 0; $i < 1; ++$i)
 
-#define SM_YIELD()      \
-    return (SmState_t)  \
-    {                   \
-        .m_state = NULL \
+#define SM_YIELD()                  \
+    return (SmState_t)              \
+    {                               \
+        .m_state = SmYieldSentinel, \
     }
 
 #define SM_YIELD_IF(cond) \
@@ -135,27 +138,24 @@ extern "C"
         SM_TRANSITION(a_sm, a_raw_state);         \
     }
 
-#define SM_EXIT(a_sm)                                                  \
-    sm_exit_target:                                                    \
-    if (1)                                                             \
-    {                                                                  \
-        /* Reaching this means the body logic did not yield. If the */ \
-        /* body logic did not specify a transition that is an error.*/ \
-        assert(a_sm->m_next_state);                                    \
-        goto sm_exit_body;                                             \
-    }                                                                  \
-    else                                                               \
-        while (1)                                                      \
-            if (1)                                                     \
-            {                                                          \
-                return (SmState_t){                                    \
-                    .m_state = a_sm->m_next_state,                     \
-                };                                                     \
-            }                                                          \
-            else                                                       \
-            sm_exit_body:                                              \
-                /* Eat 'break' in user code to avoid return bypass.*/  \
-                /* Use '$' in the identifier to avoid collisions.*/    \
+#define SM_EXIT(a_sm)                                                 \
+    sm_exit_target:                                                   \
+    if (1)                                                            \
+    {                                                                 \
+        goto sm_exit_body;                                            \
+    }                                                                 \
+    else                                                              \
+        while (1)                                                     \
+            if (1)                                                    \
+            {                                                         \
+                return (SmState_t){                                   \
+                    .m_state = a_sm->m_next_state,                    \
+                };                                                    \
+            }                                                         \
+            else                                                      \
+            sm_exit_body:                                             \
+                /* Eat 'break' in user code to avoid return bypass.*/ \
+                /* Use '$' in the identifier to avoid collisions.*/   \
                 for (int $i = 0; $i < 1; ++$i)
 
 #ifdef __cplusplus
