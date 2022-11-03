@@ -142,9 +142,6 @@ extern "C"
         /* Reaching this means the body logic did not yield. If the */ \
         /* body logic did not specify a transition that is an error.*/ \
         assert(a_sm->m_next_state);                                    \
-        /* It is illegal to request a transition to the current*/      \
-        /* state; Use SM_YIELD() instead. */                           \
-        assert(a_sm->m_next_state != a_sm->m_current_state);           \
         goto sm_exit_body;                                             \
     }                                                                  \
     else                                                               \
