@@ -81,14 +81,14 @@ extern "C"
     ///
     ///    SmState_t SomeState(StateMachine_t *a_sm) {
     ///      SM_ENTRY(a_sm) {
-    ///        // Entry logic goes here.
+    ///        // Entry logic goes here. Can leave the block with 'break'.
     ///      }
     ///
     ///      /// Body logic goes here. All branches must result in a call to
     ///      /// either SM_YIELD() or SM_TRANSITION(a_sm, <some_state>).
     ///
     ///      SM_EXIT(a_sm) {
-    ///        // Exit logic goes here.
+    ///        // Exit logic goes here. Can leave the block with 'break'.
     ///      }
     ///    }
     ///
@@ -105,12 +105,21 @@ extern "C"
         }                                                           \
     }                                                               \
     else                                                            \
-        sm_entry_code:
+    sm_entry_code:                                                  \
+        /* Eat 'break' in user code to keep symmetry with EXIT().*/ \
+        /* Use '$' in the identifier to avoid collisions.*/         \
+        for (int $i = 0; $i < 1; ++$i)
 
 #define SM_YIELD()      \
     return (SmState_t)  \
     {                   \
         .m_state = NULL \
+    }
+
+#define SM_YIELD_IF(cond) \
+    if (cond)             \
+    {                     \
+        SM_YIELD();       \
     }
 
 #define SM_TRANSITION(a_sm, a_raw_state)  \
@@ -120,25 +129,38 @@ extern "C"
         goto sm_exit_target;              \
     } while (0)
 
-#define SM_EXIT(a_sm)                                                   \
-    sm_exit_target:                                                     \
-    if (1)                                                              \
-    {                                                                   \
-        /* Reaching this means the body logic did not yield. If the */  \
-        /* body logic did not specify a transition that is an error.*/  \
-        assert(a_sm->m_next_state);                                     \
-        goto sm_exit_body;                                              \
-    }                                                                   \
-    else                                                                \
-        while (1)                                                       \
-            if (1)                                                      \
-            {                                                           \
-                return (SmState_t){                                     \
-                    .m_state = a_sm->m_next_state,                      \
-                };                                                      \
-            }                                                           \
-            else                                                        \
-                sm_exit_body:
+#define SM_TRANSITION_IF(a_sm, cond, a_raw_state) \
+    if (cond)                                     \
+    {                                             \
+        SM_TRANSITION(a_sm, a_raw_state);         \
+    }
+
+#define SM_EXIT(a_sm)                                                  \
+    sm_exit_target:                                                    \
+    if (1)                                                             \
+    {                                                                  \
+        /* Reaching this means the body logic did not yield. If the */ \
+        /* body logic did not specify a transition that is an error.*/ \
+        assert(a_sm->m_next_state);                                    \
+        /* It is illegal to request a transition to the current*/      \
+        /* state; Use SM_YIELD() instead. */                           \
+        assert(a_sm->m_next_state != a_sm->m_current_state);           \
+        goto sm_exit_body;                                             \
+    }                                                                  \
+    else                                                               \
+        while (1)                                                      \
+            if (1)                                                     \
+            {                                                          \
+                return (SmState_t){                                    \
+                    .m_state = a_sm->m_next_state,                     \
+                };                                                     \
+            }                                                          \
+            else                                                       \
+            sm_exit_body:                                              \
+                /* Eat 'break' in user code to avoid return bypass.*/  \
+                /* Use '$' in the identifier to avoid collisions.*/    \
+                for (int $i = 0; $i < 1; ++$i)
+
 #ifdef __cplusplus
 }
 #endif
