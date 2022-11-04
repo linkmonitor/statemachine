@@ -39,5 +39,7 @@ bool StateMachineRun(StateMachine_t *a_sm)
 
 SmState_t SmYieldSentinel(StateMachine_t *a_sm)
 {
+    (void)a_sm;
     SM_ASSERT(0);  // Should never get here.
+    return (SmState_t){.m_state = NULL};
 }

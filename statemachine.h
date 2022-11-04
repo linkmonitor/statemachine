@@ -141,6 +141,7 @@ extern "C"
     }
 
 #define SM_EXIT(a_sm)                                                 \
+    __attribute__((unused))                                           \
     sm_exit_target:                                                   \
     if (1)                                                            \
     {                                                                 \
