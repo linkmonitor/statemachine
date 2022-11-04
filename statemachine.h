@@ -141,7 +141,9 @@ extern "C"
     }
 
 #define SM_EXIT(a_sm)                                                 \
-    __attribute__((unused))                                           \
+    /* NOTE: If you get a warning that this label is unused, it */    \
+    /* means that there is no call to `SM_TRANSITION()` above and */  \
+    /* that this logic will never run. That is a REAL warning. */     \
     sm_exit_target:                                                   \
     if (1)                                                            \
     {                                                                 \
